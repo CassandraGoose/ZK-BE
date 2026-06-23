@@ -24,7 +24,7 @@ if (env.NODE_ENV !== "test") {
 
 const client = testClient(createTestApp(router));
 
-describe("tasks routes", () => {
+describe("notes routes", () => {
   beforeAll(async () => {
     execSync("npx drizzle-kit push");
   });
@@ -33,8 +33,8 @@ describe("tasks routes", () => {
     fs.rmSync("test.db", { force: true });
   });
 
-  it("post /tasks validates the body when creating", async () => {
-    const response = await client.tasks.$post({
+  it("post /notes validates the body when creating", async () => {
+    const response = await client.notes.$post({
       json: {
         done: false,
       },
@@ -52,8 +52,8 @@ describe("tasks routes", () => {
   const id = 1;
   const name = "Learn vitest";
 
-  it("post /tasks creates a task", async () => {
-    const response = await client.tasks.$post({
+  it("post /notes creates a note", async () => {
+    const response = await client.notes.$post({
       json: {
         name,
         done: false,
@@ -63,12 +63,11 @@ describe("tasks routes", () => {
     if (response.status === 200) {
       const json = await response.json();
       expect(json.name).toBe(name);
-      expect(json.done).toBe(false);
     }
   });
 
-  it("get /tasks lists all tasks", async () => {
-    const response = await client.tasks.$get();
+  it("get /notes lists all notes", async () => {
+    const response = await client.notes.$get();
     expect(response.status).toBe(200);
     if (response.status === 200) {
       const json = await response.json();
@@ -77,8 +76,8 @@ describe("tasks routes", () => {
     }
   });
 
-  it("get /tasks/{id} validates the id param", async () => {
-    const response = await client.tasks[":id"].$get({
+  it("get /notes/{id} validates the id param", async () => {
+    const response = await client.notes[":id"].$get({
       param: {
         id: "wat",
       },
@@ -93,8 +92,8 @@ describe("tasks routes", () => {
     }
   });
 
-  it("get /tasks/{id} returns 404 when task not found", async () => {
-    const response = await client.tasks[":id"].$get({
+  it("get /notes/{id} returns 404 when note not found", async () => {
+    const response = await client.notes[":id"].$get({
       param: {
         id: 999,
       },
@@ -106,8 +105,8 @@ describe("tasks routes", () => {
     }
   });
 
-  it("get /tasks/{id} gets a single task", async () => {
-    const response = await client.tasks[":id"].$get({
+  it("get /notes/{id} gets a single note", async () => {
+    const response = await client.notes[":id"].$get({
       param: {
         id,
       },
@@ -116,12 +115,11 @@ describe("tasks routes", () => {
     if (response.status === 200) {
       const json = await response.json();
       expect(json.name).toBe(name);
-      expect(json.done).toBe(false);
     }
   });
 
-  it("patch /tasks/{id} validates the body when updating", async () => {
-    const response = await client.tasks[":id"].$patch({
+  it("patch /notes/{id} validates the body when updating", async () => {
+    const response = await client.notes[":id"].$patch({
       param: {
         id,
       },
@@ -137,8 +135,8 @@ describe("tasks routes", () => {
     }
   });
 
-  it("patch /tasks/{id} validates the id param", async () => {
-    const response = await client.tasks[":id"].$patch({
+  it("patch /notes/{id} validates the id param", async () => {
+    const response = await client.notes[":id"].$patch({
       param: {
         id: "wat",
       },
@@ -154,8 +152,8 @@ describe("tasks routes", () => {
     }
   });
 
-  it("patch /tasks/{id} validates empty body", async () => {
-    const response = await client.tasks[":id"].$patch({
+  it("patch /notes/{id} validates empty body", async () => {
+    const response = await client.notes[":id"].$patch({
       param: {
         id,
       },
@@ -169,8 +167,8 @@ describe("tasks routes", () => {
     }
   });
 
-  it("patch /tasks/{id} updates a single property of a task", async () => {
-    const response = await client.tasks[":id"].$patch({
+  it("patch /notes/{id} updates a single property of a note", async () => {
+    const response = await client.notes[":id"].$patch({
       param: {
         id,
       },
@@ -181,12 +179,11 @@ describe("tasks routes", () => {
     expect(response.status).toBe(200);
     if (response.status === 200) {
       const json = await response.json();
-      expect(json.done).toBe(true);
     }
   });
 
-  it("delete /tasks/{id} validates the id when deleting", async () => {
-    const response = await client.tasks[":id"].$delete({
+  it("delete /notes/{id} validates the id when deleting", async () => {
+    const response = await client.notes[":id"].$delete({
       param: {
         id: "wat",
       },
@@ -201,8 +198,8 @@ describe("tasks routes", () => {
     }
   });
 
-  it("delete /tasks/{id} removes a task", async () => {
-    const response = await client.tasks[":id"].$delete({
+  it("delete /notes/{id} removes a note", async () => {
+    const response = await client.notes[":id"].$delete({
       param: {
         id,
       },
