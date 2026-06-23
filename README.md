@@ -1,23 +1,11 @@
-# Hono Open API Starter
+# ZK - Zettlekasten API 
+## Built with W3CJ's Hono Open API Starter Kit - A starter template for building fully documented type-safe JSON APIs with Hono and Open API.
 
-A starter template for building fully documented type-safe JSON APIs with Hono and Open API.
+---
 
-> A new version of drizzle was released since the video showing this starter was made. See [this commit](https://github.com/w3cj/hono-open-api-starter/commit/92525ff84fb2a247c8245cc889b2320d7b3b6e2c) for the changes required to use drizzle v0.35+
+## This API serves users with a collection of their notes, tied to sources. Users can explore their related notes and sources and add/edit them. As their collection grows, to enhance understanding and make connections, users can view a graph of their notes connected via concepts/ideas/categories crafted by AI (coming soon)
 
-> A new version of zod was released since the video showing this starter was made. See [this commit](https://github.com/w3cj/hono-open-api-starter/commit/f7f88dfc40cb7bda53f8729983d8308c2d6c780b) for the changes required to use zod v4.
-
-> For a cloudflare specific template, see the [cloudflare branch](https://github.com/w3cj/hono-open-api-starter/tree/cloudflare) on this repo
-
-> For other deployment examples see the [hono-node-deployment-examples](https://github.com/w3cj/hono-node-deployment-examples) repo
-
-- [Hono Open API Starter](#hono-open-api-starter)
-  - [Included](#included)
-  - [Setup](#setup)
-  - [Code Tour](#code-tour)
-  - [Endpoints](#endpoints)
-  - [References](#references)
-
-## Included
+## Included, from Hono Open API Starter Kit
 
 - Structured logging with [pino](https://getpino.io/) / [hono-pino](https://www.npmjs.com/package/hono-pino)
 - Documented / type-safe routes with [@hono/zod-openapi](https://github.com/honojs/middleware/tree/main/packages/zod-openapi)
@@ -30,13 +18,6 @@ A starter template for building fully documented type-safe JSON APIs with Hono a
 
 ## Setup
 
-Clone this template without git history
-
-```sh
-npx degit w3cj/hono-open-api-starter my-api
-cd my-api
-```
-
 Create `.env` file
 
 ```sh
@@ -46,13 +27,14 @@ cp .env.example .env
 Install dependencies
 
 ```sh
-pnpm install
+npm install
 ```
 
-Create sqlite db / push schema
+Create db / push schema
 
 ```sh
-pnpm drizzle-kit push
+npm drizzle-kit generate
+npm drizzle-kit push
 ```
 
 Run
@@ -61,10 +43,10 @@ Run
 pnpm dev
 ```
 
-Lint
+Lint & Format
 
 ```sh
-pnpm lint
+pnpm lintformat
 ```
 
 Test
@@ -73,34 +55,19 @@ Test
 pnpm test
 ```
 
-## Code Tour
-
-Base hono app exported from [app.ts](./src/app.ts). Local development uses [@hono/node-server](https://hono.dev/docs/getting-started/nodejs) defined in [index.ts](./src/index.ts) - update this file or create a new entry point to use your preferred runtime.
-
-Typesafe env defined in [env.ts](./src/env.ts) - add any other required environment variables here. The application will not start if any required environment variables are missing
-
-See [src/routes/tasks](./src/routes/tasks/) for an example Open API group. Copy this folder / use as an example for your route groups.
-
-- Router created in [tasks.index.ts](./src/routes/tasks/tasks.index.ts)
-- Route definitions defined in [tasks.routes.ts](./src/routes/tasks/tasks.routes.ts)
-- Hono request handlers defined in [tasks.handlers.ts](./src/routes/tasks/tasks.handlers.ts)
-- Group unit tests defined in [tasks.test.ts](./src/routes/tasks/tasks.test.ts)
-
-All app routes are grouped together and exported into single type as `AppType` in [app.ts](./src/app.ts) for use in [RPC / hono/client](https://hono.dev/docs/guides/rpc).
-
 ## Endpoints
 
 | Path               | Description              |
 | ------------------ | ------------------------ |
 | GET /doc           | Open API Specification   |
 | GET /reference     | Scalar API Documentation |
-| GET /tasks         | List all tasks           |
-| POST /tasks        | Create a task            |
-| GET /tasks/{id}    | Get one task by id       |
-| PATCH /tasks/{id}  | Patch one task by id     |
-| DELETE /tasks/{id} | Delete one task by id    |
+| GET /notes         | List all notes           |
+| POST /notes        | Create a note            |
+| GET /notes/{id}    | Get one note by id       |
+| PATCH /notes/{id}  | Patch one note by id     |
+| DELETE /notes/{id} | Delete one note by id    |
 
-## References
+## References from Hono Open API Starter Kit
 
 - [What is Open API?](https://swagger.io/docs/specification/v3_0/about/)
 - [Hono](https://hono.dev/)
