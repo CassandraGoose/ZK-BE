@@ -5,25 +5,32 @@ import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
-import { tasks } from "@/db/schema";
+import { notes } from "@/db/schema";
 import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./tasks.routes";
+import type {
+  CreateRoute,
+  GetOneRoute,
+  ListRoute,
+  PatchRoute,
+  RemoveRoute,
+} from "./notes.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
-  const tasks = await db.query.tasks.findMany();
-  return c.json(tasks);
+  const notes = await db.query.notes.findMany();
+  return c.json(notes);
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
   const task = c.req.valid("json");
-  const [inserted] = await db.insert(tasks).values(task).returning();
+  const [inserted] = await db.insert(notes).values(task).returning();
   return c.json(inserted, HttpStatusCodes.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
-  const { id } = c.req.valid("param");
-  const task = await db.query.tasks.findFirst({
+  const { id: idParam } = c.req.valid("param");
+  const id = String(idParam);
+  const task = await db.query.notes.findFirst({
     where(fields, operators) {
       return operators.eq(fields.id, id);
     },
@@ -42,7 +49,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c) => {
-  const { id } = c.req.valid("param");
+  const { id: idParam } = c.req.valid("param");
+  const id = String(idParam);
   const updates = c.req.valid("json");
 
   if (Object.keys(updates).length === 0) {
@@ -64,9 +72,10 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
     );
   }
 
-  const [task] = await db.update(tasks)
+  const [task] = await db
+    .update(notes)
     .set(updates)
-    .where(eq(tasks.id, id))
+    .where(eq(notes.id, id))
     .returning();
 
   if (!task) {
@@ -82,11 +91,11 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
-  const { id } = c.req.valid("param");
-  const result = await db.delete(tasks)
-    .where(eq(tasks.id, id));
+  const { id: idParam } = c.req.valid("param");
+  const id = String(idParam);
+  const result = await db.delete(notes).where(eq(notes.id, id));
 
-  if (result.rowsAffected === 0) {
+  if (result.rowCount === 0) {
     return c.json(
       {
         message: HttpStatusPhrases.NOT_FOUND,
