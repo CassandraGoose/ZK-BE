@@ -15,7 +15,7 @@ export const list = createRoute({
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       z.array(selectNotesSchema),
-      "The list of tasks",
+      "The list of notes",
     ),
   },
 });
@@ -26,14 +26,14 @@ export const create = createRoute({
   request: {
     body: jsonContentRequired(
       insertNotesSchema,
-      "The task to create",
+      "The note to create",
     ),
   },
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       selectNotesSchema,
-      "The created task",
+      "The created note",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertNotesSchema),
@@ -43,7 +43,7 @@ export const create = createRoute({
 });
 
 export const getOne = createRoute({
-  path: "/tasks/{id}",
+  path: "/notes/{id}",
   method: "get",
   request: {
     params: IdParamsSchema,
@@ -52,11 +52,11 @@ export const getOne = createRoute({
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       selectNotesSchema,
-      "The requested task",
+      "The requested note",
     ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Task not found",
+      "Note not found",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdParamsSchema),
@@ -66,24 +66,24 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: "/tasks/{id}",
+  path: "/notes/{id}",
   method: "patch",
   request: {
     params: IdParamsSchema,
     body: jsonContentRequired(
       patchNotesSchema,
-      "The task updates",
+      "The note updates",
     ),
   },
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       selectNotesSchema,
-      "The updated task",
+      "The updated note",
     ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Task not found",
+      "Note not found",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchNotesSchema)
@@ -94,7 +94,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: "/tasks/{id}",
+  path: "/notes/{id}",
   method: "delete",
   request: {
     params: IdParamsSchema,
@@ -102,11 +102,11 @@ export const remove = createRoute({
   tags,
   responses: {
     [HttpStatusCodes.NO_CONTENT]: {
-      description: "Task deleted",
+      description: "Note deleted",
     },
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Task not found",
+      "Note not found",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdParamsSchema),
