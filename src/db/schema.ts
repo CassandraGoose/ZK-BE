@@ -1,37 +1,30 @@
-import { z } from "@hono/zod-openapi";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { pgTable, text, uuid, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { toZodV4SchemaTyped } from "@/lib/zod-utils";
 
-export const tasks = sqliteTable("tasks", {
-  id: integer({ mode: "number" })
-    .primaryKey({ autoIncrement: true }),
+export const notes = pgTable("note", {
+  id: uuid().primaryKey().defaultRandom(),
   name: text().notNull(),
-  done: integer({ mode: "boolean" })
-    .notNull()
-    .default(false),
-  createdAt: integer({ mode: "timestamp" })
-    .$defaultFn(() => new Date()),
-  updatedAt: integer({ mode: "timestamp" })
-    .$defaultFn(() => new Date())
-    .$onUpdate(() => new Date()),
+  created: timestamp({ withTimezone: true }).defaultNow(),
+  edited: timestamp({ withTimezone: true }),
 });
 
-export const selectTasksSchema = toZodV4SchemaTyped(createSelectSchema(tasks));
+export const selectNotesSchema = toZodV4SchemaTyped(createSelectSchema(notes));
 
-export const insertTasksSchema = toZodV4SchemaTyped(createInsertSchema(
-  tasks,
-  {
-    name: field => field.min(1).max(500),
-  },
-).required({
-  done: true,
-}).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-}));
+export const insertNotesSchema = toZodV4SchemaTyped(
+  createInsertSchema(notes, {
+    name: (field) => field.min(1).max(500),
+  })
+    .required({
+      name: true,
+    })
+    .omit({
+      id: true,
+      created: true,
+      edited: true,
+    }),
+);
 
 // @ts-expect-error partial exists on zod v4 type
-export const patchTasksSchema = insertTasksSchema.partial();
+export const patchNotesSchema = insertNotesSchema.partial();

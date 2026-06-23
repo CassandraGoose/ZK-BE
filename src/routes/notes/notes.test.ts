@@ -2,14 +2,21 @@ import { testClient } from "hono/testing";
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
-import { afterAll, beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 import { ZodIssueCode } from "zod";
 
 import env from "@/env";
 import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
 import { createTestApp } from "@/lib/create-app";
 
-import router from "./tasks.index";
+import router from "./notes.index";
 
 if (env.NODE_ENV !== "test") {
   throw new Error("NODE_ENV must be 'test'");
@@ -19,7 +26,7 @@ const client = testClient(createTestApp(router));
 
 describe("tasks routes", () => {
   beforeAll(async () => {
-    execSync("pnpm drizzle-kit push");
+    execSync("npx drizzle-kit push");
   });
 
   afterAll(async () => {
@@ -36,7 +43,9 @@ describe("tasks routes", () => {
     if (response.status === 422) {
       const json = await response.json();
       expect(json.error.issues[0].path[0]).toBe("name");
-      expect(json.error.issues[0].message).toBe(ZOD_ERROR_MESSAGES.EXPECTED_STRING);
+      expect(json.error.issues[0].message).toBe(
+        ZOD_ERROR_MESSAGES.EXPECTED_STRING,
+      );
     }
   });
 
@@ -78,7 +87,9 @@ describe("tasks routes", () => {
     if (response.status === 422) {
       const json = await response.json();
       expect(json.error.issues[0].path[0]).toBe("id");
-      expect(json.error.issues[0].message).toBe(ZOD_ERROR_MESSAGES.EXPECTED_NUMBER);
+      expect(json.error.issues[0].message).toBe(
+        ZOD_ERROR_MESSAGES.EXPECTED_NUMBER,
+      );
     }
   });
 
@@ -137,7 +148,9 @@ describe("tasks routes", () => {
     if (response.status === 422) {
       const json = await response.json();
       expect(json.error.issues[0].path[0]).toBe("id");
-      expect(json.error.issues[0].message).toBe(ZOD_ERROR_MESSAGES.EXPECTED_NUMBER);
+      expect(json.error.issues[0].message).toBe(
+        ZOD_ERROR_MESSAGES.EXPECTED_NUMBER,
+      );
     }
   });
 
@@ -182,7 +195,9 @@ describe("tasks routes", () => {
     if (response.status === 422) {
       const json = await response.json();
       expect(json.error.issues[0].path[0]).toBe("id");
-      expect(json.error.issues[0].message).toBe(ZOD_ERROR_MESSAGES.EXPECTED_NUMBER);
+      expect(json.error.issues[0].message).toBe(
+        ZOD_ERROR_MESSAGES.EXPECTED_NUMBER,
+      );
     }
   });
 

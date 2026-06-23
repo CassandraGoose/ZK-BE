@@ -1,14 +1,11 @@
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/node-postgres";
 
 import env from "@/env";
 
 import * as schema from "./schema";
 
 const db = drizzle({
-  connection: {
-    url: env.DATABASE_URL,
-    authToken: env.DATABASE_AUTH_TOKEN,
-  },
+  connection: env.DATABASE_URL,
   casing: "snake_case",
   schema,
 });
