@@ -10,7 +10,7 @@ import env from "@/env";
 import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
 import { createTestApp } from "@/lib/create-app";
 
-import router from "./notes.index";
+import router from "./sources.index";
 
 if (env.NODE_ENV !== "test") {
   throw new Error("NODE_ENV must be 'test'");
@@ -18,7 +18,7 @@ if (env.NODE_ENV !== "test") {
 
 const client = testClient(createTestApp(router));
 
-describe("notes routes", () => {
+describe("sources routes", () => {
   beforeAll(async () => {
     const result = await db.execute<Record<string, unknown>>(
       sql`SELECT current_database()`,
@@ -38,39 +38,41 @@ describe("notes routes", () => {
     await migrate(db, { migrationsFolder: "./src/db/migrations" });
   });
 
-  it("post /notes validates the body when creating", async () => {
-    const response = await client.notes.$post({
+  it("post /sources validates the body when creating", async () => {
+    const response = await client.sources.$post({
       json: {},
     });
     expect(response.status).toBe(422);
     if (response.status === 422) {
       const json = await response.json();
-      expect(json.error.issues[0].path[0]).toBe("name");
+      expect(json.error.issues[0].path[0]).toBe("title");
       expect(json.error.issues[0].message).toBe(
         ZOD_ERROR_MESSAGES.EXPECTED_STRING,
       );
     }
   });
 
-  let noteId: string;
-  const name = "Learn vitest";
+  let sourceID: string;
+  const title = "Learn vitest";
+  const artifact = "https://url.com";
 
-  it("post /notes creates a note", async () => {
-    const response = await client.notes.$post({
+  it("post /sources creates a note", async () => {
+    const response = await client.sources.$post({
       json: {
-        name,
+        title,
+        artifact,
       },
     });
     expect(response.status).toBe(200);
     if (response.status === 200) {
       const json = await response.json();
-      expect(json.name).toBe(name);
-      noteId = json.id;
+      expect(json.title).toBe(title);
+      sourceID = json.id;
     }
   });
 
-  it("get /notes lists all notes", async () => {
-    const response = await client.notes.$get();
+  it("get /sources lists all sources", async () => {
+    const response = await client.sources.$get();
     expect(response.status).toBe(200);
     if (response.status === 200) {
       const json = await response.json();
@@ -79,8 +81,8 @@ describe("notes routes", () => {
     }
   });
 
-  it("get /notes/{id} validates the id param", async () => {
-    const response = await client.notes[":id"].$get({
+  it("get /sources/{id} validates the id param", async () => {
+    const response = await client.sources[":id"].$get({
       param: {
         id: "wat",
       },
@@ -95,8 +97,8 @@ describe("notes routes", () => {
     }
   });
 
-  it("get /notes/{id} returns 404 when note not found", async () => {
-    const response = await client.notes[":id"].$get({
+  it("get /sources/{id} returns 404 when note not found", async () => {
+    const response = await client.sources[":id"].$get({
       param: {
         id: "00000000-0000-0000-0000-000000000000",
       },
@@ -108,38 +110,38 @@ describe("notes routes", () => {
     }
   });
 
-  it("get /notes/{id} gets a single note", async () => {
-    const response = await client.notes[":id"].$get({
+  it("get /sources/{id} gets a single note", async () => {
+    const response = await client.sources[":id"].$get({
       param: {
-        id: noteId,
+        id: sourceID,
       },
     });
     expect(response.status).toBe(200);
     if (response.status === 200) {
       const json = await response.json();
-      expect(json.name).toBe(name);
+      expect(json.title).toBe(title);
     }
   });
 
-  it("patch /notes/{id} validates the body when updating", async () => {
-    const response = await client.notes[":id"].$patch({
+  it("patch /sources/{id} validates the body when updating", async () => {
+    const response = await client.sources[":id"].$patch({
       param: {
-        id: noteId,
+        id: sourceID,
       },
       json: {
-        name: "",
+        title: "",
       },
     });
     expect(response.status).toBe(422);
     if (response.status === 422) {
       const json = await response.json();
-      expect(json.error.issues[0].path[0]).toBe("name");
+      expect(json.error.issues[0].path[0]).toBe("title");
       expect(json.error.issues[0].code).toBe(ZodIssueCode.too_small);
     }
   });
 
-  it("patch /notes/{id} validates the id param", async () => {
-    const response = await client.notes[":id"].$patch({
+  it("patch /sources/{id} validates the id param", async () => {
+    const response = await client.sources[":id"].$patch({
       param: {
         id: "wat",
       },
@@ -155,10 +157,10 @@ describe("notes routes", () => {
     }
   });
 
-  it("patch /notes/{id} validates empty body", async () => {
-    const response = await client.notes[":id"].$patch({
+  it("patch /sources/{id} validates empty body", async () => {
+    const response = await client.sources[":id"].$patch({
       param: {
-        id: noteId,
+        id: sourceID,
       },
       json: {},
     });
@@ -170,13 +172,13 @@ describe("notes routes", () => {
     }
   });
 
-  it("patch /notes/{id} updates a single property of a note", async () => {
-    const response = await client.notes[":id"].$patch({
+  it("patch /sources/{id} updates a single property of a note", async () => {
+    const response = await client.sources[":id"].$patch({
       param: {
-        id: noteId,
+        id: sourceID,
       },
       json: {
-        name: "updated",
+        title: "updated",
       },
     });
     expect(response.status).toBe(200);
@@ -185,8 +187,8 @@ describe("notes routes", () => {
     }
   });
 
-  it("delete /notes/{id} validates the id when deleting", async () => {
-    const response = await client.notes[":id"].$delete({
+  it("delete /sources/{id} validates the id when deleting", async () => {
+    const response = await client.sources[":id"].$delete({
       param: {
         id: "wat",
       },
@@ -201,10 +203,10 @@ describe("notes routes", () => {
     }
   });
 
-  it("delete /notes/{id} removes a note", async () => {
-    const response = await client.notes[":id"].$delete({
+  it("delete /sources/{id} removes a note", async () => {
+    const response = await client.sources[":id"].$delete({
       param: {
-        id: noteId,
+        id: sourceID,
       },
     });
     expect(response.status).toBe(204);

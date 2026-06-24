@@ -8,6 +8,13 @@
       "when": 1782243761484,
       "tag": "0000_lying_dark_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782340628530,
+      "tag": "0001_hard_vermin",
+      "breakpoints": true
     }
   ]
 }
