@@ -7,15 +7,12 @@ const app = createApp();
 
 configureOpenAPI(app);
 
-const routes = [
-  index,
-  notes,
-] as const;
+const routes = [index, notes] as const;
 
 routes.forEach((route) => {
   app.route("/", route);
 });
 
-export type AppType = typeof routes[number];
+export type AppType = (typeof routes)[number];
 
 export default app;

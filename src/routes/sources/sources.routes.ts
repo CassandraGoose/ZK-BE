@@ -4,52 +4,61 @@ import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdUUIDParamsSchema } from "stoker/openapi/schemas";
 
 import {
-  insertNotesSchema,
-  patchNotesSchema,
-  selectNotesSchema,
+  insertSourcesSchema,
+  patchSourcesSchema,
+  selectSourcesSchema,
 } from "@/db/schema";
 import { notFoundSchema } from "@/lib/constants";
 
-const tags = ["Notes"];
+const tags = ["Sources"];
 
 export const list = createRoute({
-  path: "/notes",
+  path: "/sources",
   method: "get",
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      z.array(selectNotesSchema),
-      "The list of notes",
+      z.array(selectSourcesSchema),
+      "The list of sources",
     ),
   },
 });
 
 export const create = createRoute({
-  path: "/notes",
+  path: "/sources",
   method: "post",
   request: {
-    body: jsonContentRequired(insertNotesSchema, "The note to create"),
+    body: jsonContentRequired(insertSourcesSchema, "The source to create"),
   },
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(selectNotesSchema, "The created note"),
+    [HttpStatusCodes.OK]: jsonContent(
+      selectSourcesSchema,
+      "The created source",
+    ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(insertNotesSchema),
+      createErrorSchema(insertSourcesSchema),
       "The validation error(s)",
     ),
   },
 });
 
 export const getOne = createRoute({
-  path: "/notes/{id}",
+  path: "/sources/{id}",
   method: "get",
   request: {
     params: IdUUIDParamsSchema,
   },
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(selectNotesSchema, "The requested note"),
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, "Note not found"),
+    [HttpStatusCodes.OK]: jsonContent(
+      selectSourcesSchema,
+      "The requested source",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Source not found",
+    ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdUUIDParamsSchema),
       "Invalid id error",
@@ -58,18 +67,24 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: "/notes/{id}",
+  path: "/sources/{id}",
   method: "patch",
   request: {
     params: IdUUIDParamsSchema,
-    body: jsonContentRequired(patchNotesSchema, "The note updates"),
+    body: jsonContentRequired(patchSourcesSchema, "The source updates"),
   },
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(selectNotesSchema, "The updated note"),
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, "Note not found"),
+    [HttpStatusCodes.OK]: jsonContent(
+      selectSourcesSchema,
+      "The updated source",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Source not found",
+    ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(patchNotesSchema).or(
+      createErrorSchema(patchSourcesSchema).or(
         createErrorSchema(IdUUIDParamsSchema),
       ),
       "The validation error(s)",
@@ -78,7 +93,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: "/notes/{id}",
+  path: "/sources/{id}",
   method: "delete",
   request: {
     params: IdUUIDParamsSchema,
@@ -86,9 +101,12 @@ export const remove = createRoute({
   tags,
   responses: {
     [HttpStatusCodes.NO_CONTENT]: {
-      description: "Note deleted",
+      description: "Source deleted",
     },
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, "Note not found"),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Source not found",
+    ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdUUIDParamsSchema),
       "Invalid id error",

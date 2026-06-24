@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint --fix",
     "test": "cross-env NODE_ENV=test vitest",
-    "build": "tsc && tsc-alias"
+    "build": "tsc && tsc-alias",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@hono/node-server": "^2.0.6",
@@ -36,6 +37,7 @@
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.5.0",
     "eslint-plugin-format": "^2.0.1",
+    "prettier": "^3.8.4",
     "tsc-alias": "^1.8.17",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",

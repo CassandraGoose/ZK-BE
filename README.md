@@ -1,4 +1,5 @@
-# ZK - Zettlekasten API 
+# ZK - Zettlekasten API
+
 ## Built with W3CJ's Hono Open API Starter Kit - A starter template for building fully documented type-safe JSON APIs with Hono and Open API.
 
 ---
@@ -28,6 +29,12 @@ Install dependencies
 
 ```sh
 npm install
+```
+
+Create a test database (assuming you have psql/postgres ready)
+
+```sh
+createdb zk_test
 ```
 
 Create db / push schema
