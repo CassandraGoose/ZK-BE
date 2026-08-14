@@ -15,6 +15,20 @@
       "when": 1782340628530,
       "tag": "0001_hard_vermin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786489718718,
+      "tag": "0002_dazzling_tusk",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1786490175428,
+      "tag": "0003_green_shotgun",
+      "breakpoints": true
     }
   ]
 }

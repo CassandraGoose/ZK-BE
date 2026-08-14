@@ -1,0 +1,1 @@
+ALTER TABLE "note_source" DROP COLUMN "id";
