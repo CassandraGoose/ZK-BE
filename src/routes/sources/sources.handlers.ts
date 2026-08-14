@@ -22,7 +22,21 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
-  const source = c.req.valid("json");
+  const { noteIds, ...source } = c.req.valid("json");
+
+  const existingNotes = await db
+    .select()
+    .from(notes)
+    .where(inArray(notes.id, noteIds));
+
+  if (existingNotes.length !== noteIds.length) {
+    return c.json(
+      { message: HttpStatusPhrases.NOT_FOUND },
+      HttpStatusCodes.NOT_FOUND,
+    );
+  }
+
+
   const [inserted] = await db.insert(sources).values(source).returning();
   return c.json(inserted, HttpStatusCodes.OK);
 };
