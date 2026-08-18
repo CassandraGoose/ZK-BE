@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   pgTable,
   primaryKey,
@@ -5,7 +6,6 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm/relations";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import z from "zod";
 
@@ -70,22 +70,6 @@ export const insertNotesSchema = toZodV4SchemaTyped(
     }),
 );
 
-
-export const insertSourcesSchema = toZodV4SchemaTyped(
-  createInsertSchema(sources, {
-    title: (field) => field.min(1).max(1000),
-  })
-    .required({
-      title: true,
-      artifact: true,
-    })
-    .omit({
-      id: true,
-      created: true,
-      edited: true,
-    }),
-);
-
 export const createSourceSchema = toZodV4SchemaTyped(
   createInsertSchema(sources, {
     title: (field) => field.min(1).max(1000),
@@ -107,28 +91,38 @@ export const createSourceSchema = toZodV4SchemaTyped(
 export const insertNoteSourcesSchema = toZodV4SchemaTyped(
   createInsertSchema(noteSources)
     .required({ noteId: true, sourceId: true })
-    .omit({ id: true, created: true }),
+    .omit({ created: true }),
 );
 
 export const notesRelations = relations(notes, ({ many }) => ({
-  links: many(noteSources),
+  linkedSources: many(noteSources, { relationName: "noteToSourceLinks" }),
 }));
 
 export const sourcesRelations = relations(sources, ({ many }) => ({
-  links: many(noteSources),
+  linkedNotes: many(noteSources, { relationName: "sourceToNoteLinks" }),
 }));
 
 export const noteSourcesRelations = relations(noteSources, ({ one }) => ({
-  note: one(notes, { fields: [noteSources.noteId], references: [notes.id] }),
+  note: one(notes, { fields: [noteSources.noteId], references: [notes.id], relationName: "noteToSourceLinks" }),
   source: one(sources, {
     fields: [noteSources.sourceId],
     references: [sources.id],
+    relationName: "sourceToNoteLinks"
   }),
 }));
 
 
 // @ts-expect-error partial exists on zod v4 type
-export const patchSourcesSchema = insertSourcesSchema.partial();
+export const patchSourcesSchema = createSourceSchema.partial();
 
 // @ts-expect-error partial exists on zod v4 type
 export const patchNotesSchema = insertNotesSchema.partial();
+
+export const dbSchema = {
+  notes,
+  sources,
+  noteSources,
+  notesRelations,
+  sourcesRelations,
+  noteSourcesRelations,
+};
