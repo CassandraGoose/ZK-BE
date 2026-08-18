@@ -1,11 +1,10 @@
 import { eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
-
 import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
-import { sources } from "@/db/schema";
+import { notes, noteSources, sources } from "@/db/schema";
 import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
 
 import type {
@@ -17,19 +16,23 @@ import type {
 } from "./sources.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
-  const sources = await db.query.sources.findMany();
-  return c.json(sources);
+  const sources = await db.query.sources.findMany({ with: { linkedNotes: { with: { note: true } } } });
+  const formattedSources = sources.map(({ linkedNotes, ...source }) => ({
+    ...source,
+    notes: linkedNotes.map((n) => n.note),
+  }));
+  return c.json(formattedSources);
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
-  const { noteIds, ...source } = c.req.valid("json");
+  const { noteId, ...source } = c.req.valid("json");
 
-  const existingNotes = await db
+  const existingNote = await db
     .select()
     .from(notes)
-    .where(inArray(notes.id, noteIds));
+    .where(eq(notes.id, noteId));
 
-  if (existingNotes.length !== noteIds.length) {
+  if (!existingNote.length) {
     return c.json(
       { message: HttpStatusPhrases.NOT_FOUND },
       HttpStatusCodes.NOT_FOUND,
@@ -38,6 +41,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
 
 
   const [inserted] = await db.insert(sources).values(source).returning();
+
+  await db.insert(noteSources).values({ noteId, sourceId: inserted.id });
   return c.json(inserted, HttpStatusCodes.OK);
 };
 
