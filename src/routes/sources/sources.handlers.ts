@@ -39,11 +39,10 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
     );
   }
 
-
   const [inserted] = await db.insert(sources).values(source).returning();
 
   await db.insert(noteSources).values({ noteId, sourceId: inserted.id });
-  return c.json(inserted, HttpStatusCodes.OK);
+  return c.json({...inserted, notes: existingNote }, HttpStatusCodes.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {

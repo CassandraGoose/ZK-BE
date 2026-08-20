@@ -40,6 +40,7 @@ export const create = createRoute({
       createErrorSchema(createSourceSchema),
       "The validation error(s)",
     ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, "Source not found"),
   },
 });
 
