@@ -41,8 +41,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
 
   const [inserted] = await db.insert(sources).values(source).returning();
 
-  await db.insert(noteSources).values({ noteId, sourceId: inserted.id });
-  return c.json({...inserted, notes: existingNote }, HttpStatusCodes.OK);
+  await db.insert(noteSources).values({ note_id: noteId, source_id: inserted.id });
+  return c.json({ ...inserted, notes: existingNote }, HttpStatusCodes.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
@@ -52,6 +52,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
     where(fields, operators) {
       return operators.eq(fields.id, id);
     },
+    with: {
+      linkedNotes: { with: { note: true } },
+    }
   });
 
   if (!source) {
@@ -63,7 +66,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
     );
   }
 
-  return c.json(source, HttpStatusCodes.OK);
+  return c.json({ ...source, linkedNotes: source.linkedNotes.map((note) => note.note) }, HttpStatusCodes.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c) => {
