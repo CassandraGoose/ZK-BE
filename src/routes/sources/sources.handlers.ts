@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
+
 import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
@@ -66,7 +67,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
     );
   }
 
-  return c.json({ ...source, linkedNotes: source.linkedNotes.map((note) => note.note) }, HttpStatusCodes.OK);
+  return c.json({ ...source, notes: source.linkedNotes.map((note) => note.note) }, HttpStatusCodes.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c) => {
@@ -108,14 +109,21 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
     );
   }
 
-  return c.json(source, HttpStatusCodes.OK);
+  const linkedNotes = await db.query.noteSources.findMany({
+    where(fields, operators) {
+      return operators.eq(fields.source_id, source.id);
+    },
+    with: { note: true },
+  });
+
+  return c.json({ ...source, notes: linkedNotes.map(({ note }) => note) }, HttpStatusCodes.OK);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
   const { id: idParam } = c.req.valid("param");
   const id = String(idParam);
   const result = await db.delete(sources).where(eq(sources.id, id));
-
+// remove related note_sources connections to this source
   if (result.rowCount === 0) {
     return c.json(
       {
