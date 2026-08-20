@@ -56,7 +56,7 @@ export const selectNoteSourcesSchema = toZodV4SchemaTyped(
   createSelectSchema(noteSources),
 );
 
-export const insertNotesSchema = toZodV4SchemaTyped(
+export const createNotesSchema = toZodV4SchemaTyped(
   createInsertSchema(notes, {
     name: (field) => field.min(1).max(3000),
   })
@@ -67,6 +67,8 @@ export const insertNotesSchema = toZodV4SchemaTyped(
       id: true,
       created: true,
       edited: true,
+    }).extend({
+      sourceId: z.uuid()
     }),
 );
 

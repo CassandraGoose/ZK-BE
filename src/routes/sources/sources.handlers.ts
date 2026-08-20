@@ -17,10 +17,12 @@ import type {
 } from "./sources.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
-  const sources = await db.query.sources.findMany({ with: { linkedNotes: { with: { note: true } } } });
+  const sources = await db.query.sources.findMany({
+    with: { linkedNotes: { with: { note: true } } },
+  });
   const formattedSources = sources.map(({ linkedNotes, ...source }) => ({
     ...source,
-    notes: linkedNotes.map((n) => n.note),
+    notes: linkedNotes.map((note) => note.note),
   }));
   return c.json(formattedSources);
 };
@@ -32,17 +34,22 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
     .select()
     .from(notes)
     .where(eq(notes.id, noteId));
-
+  // todo fix all returning items having linkednotes and notes
   if (!existingNote.length) {
     return c.json(
-      { message: HttpStatusPhrases.NOT_FOUND },
+      {
+        message: `${HttpStatusPhrases.NOT_FOUND}: the note you are trying to link does not exist.`,
+      },
       HttpStatusCodes.NOT_FOUND,
     );
   }
 
   const [inserted] = await db.insert(sources).values(source).returning();
 
-  await db.insert(noteSources).values({ note_id: noteId, source_id: inserted.id });
+  await db
+    .insert(noteSources)
+    .values({ note_id: noteId, source_id: inserted.id });
+
   return c.json({ ...inserted, notes: existingNote }, HttpStatusCodes.OK);
 };
 
@@ -55,7 +62,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
     },
     with: {
       linkedNotes: { with: { note: true } },
-    }
+    },
   });
 
   if (!source) {
@@ -67,7 +74,13 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
     );
   }
 
-  return c.json({ ...source, notes: source.linkedNotes.map((note) => note.note) }, HttpStatusCodes.OK);
+  return c.json(
+    {
+      ...source,
+      notes: source.linkedNotes.map((note) => note.note),
+    },
+    HttpStatusCodes.OK,
+  );
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c) => {
@@ -116,14 +129,20 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
     with: { note: true },
   });
 
-  return c.json({ ...source, notes: linkedNotes.map(({ note }) => note) }, HttpStatusCodes.OK);
+  return c.json(
+    {
+      ...source,
+      notes: linkedNotes.map(({ note }) => note),
+    },
+    HttpStatusCodes.OK,
+  );
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
   const { id: idParam } = c.req.valid("param");
   const id = String(idParam);
   const result = await db.delete(sources).where(eq(sources.id, id));
-// remove related note_sources connections to this source
+  // remove related note_sources connections to this source
   if (result.rowCount === 0) {
     return c.json(
       {

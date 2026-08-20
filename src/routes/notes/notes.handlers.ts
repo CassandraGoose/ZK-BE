@@ -5,7 +5,7 @@ import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
-import { notes } from "@/db/schema";
+import { notes, noteSources, sources } from "@/db/schema";
 import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
 
 import type {
@@ -17,14 +17,39 @@ import type {
 } from "./notes.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
-  const notes = await db.query.notes.findMany();
-  return c.json(notes);
+  const notes = await db.query.notes.findMany({
+    with: { linkedSources: { with: { source: true } } },
+  });
+  const formattedNotes = notes.map(({ linkedSources, ...note }) => ({
+    ...note,
+    sources: linkedSources.map((source) => source.source),
+  }));
+  return c.json(formattedNotes);
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
-  const note = c.req.valid("json");
+  const { sourceId, ...note } = c.req.valid("json");
+
+  const linkedSource = await db
+    .select()
+    .from(sources)
+    .where(eq(sources.id, sourceId));
+
+  if (!linkedSource.length) {
+    return c.json(
+      {
+        message: `${HttpStatusPhrases.NOT_FOUND}: the source you are trying to link does not exist.`,
+      },
+      HttpStatusCodes.NOT_FOUND,
+    );
+  }
   const [inserted] = await db.insert(notes).values(note).returning();
-  return c.json(inserted, HttpStatusCodes.OK);
+
+  await db
+    .insert(noteSources)
+    .values({ source_id: sourceId, note_id: inserted.id });
+
+  return c.json({ ...inserted, sources: linkedSource }, HttpStatusCodes.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
@@ -34,6 +59,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
     where(fields, operators) {
       return operators.eq(fields.id, id);
     },
+    with: { linkedSources: { with: { source: true } } },
   });
 
   if (!note) {
@@ -45,7 +71,10 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
     );
   }
 
-  return c.json(note, HttpStatusCodes.OK);
+  return c.json(
+    { ...note, sources: note.linkedSources.map((source) => source.source) },
+    HttpStatusCodes.OK,
+  );
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c) => {
@@ -87,7 +116,17 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
     );
   }
 
-  return c.json(note, HttpStatusCodes.OK);
+  const linkedSources = await db.query.noteSources.findMany({
+    where(fields, operators) {
+      return operators.eq(fields.note_id, note.id);
+    },
+    with: { source: true },
+  });
+
+  return c.json(
+    { ...note, sources: linkedSources.map(({ source }) => source) },
+    HttpStatusCodes.OK,
+  );
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
