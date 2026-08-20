@@ -29,15 +29,15 @@ export const sources = pgTable("source", {
 export const noteSources = pgTable(
   "note_source",
   {
-    noteId: uuid()
+    note_id: uuid()
       .notNull()
       .references(() => notes.id, { onDelete: "cascade" }),
-    sourceId: uuid()
+    source_id: uuid()
       .notNull()
       .references(() => sources.id, { onDelete: "cascade" }),
     created: timestamp({ withTimezone: true }).defaultNow(),
   },
-  (t) => [primaryKey({ columns: [t.noteId, t.sourceId] })],
+  (t) => [primaryKey({ columns: [t.note_id, t.source_id] })],
 );
 
 export const selectNotesSchema = toZodV4SchemaTyped(
@@ -90,7 +90,7 @@ export const createSourceSchema = toZodV4SchemaTyped(
 
 export const insertNoteSourcesSchema = toZodV4SchemaTyped(
   createInsertSchema(noteSources)
-    .required({ noteId: true, sourceId: true })
+    .required({ note_id: true, source_id: true })
     .omit({ created: true }),
 );
 
@@ -103,9 +103,9 @@ export const sourcesRelations = relations(sources, ({ many }) => ({
 }));
 
 export const noteSourcesRelations = relations(noteSources, ({ one }) => ({
-  note: one(notes, { fields: [noteSources.noteId], references: [notes.id], relationName: "noteToSourceLinks" }),
+  note: one(notes, { fields: [noteSources.note_id], references: [notes.id], relationName: "noteToSourceLinks" }),
   source: one(sources, {
-    fields: [noteSources.sourceId],
+    fields: [noteSources.source_id],
     references: [sources.id],
     relationName: "sourceToNoteLinks"
   }),
