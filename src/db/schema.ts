@@ -118,7 +118,7 @@ export const noteSourcesRelations = relations(noteSources, ({ one }) => ({
 export const patchSourcesSchema = createSourceSchema.partial();
 
 // @ts-expect-error partial exists on zod v4 type
-export const patchNotesSchema = insertNotesSchema.partial();
+export const patchNotesSchema = createNotesSchema.partial();
 
 export const dbSchema = {
   notes,
