@@ -43,6 +43,13 @@
       "when": 1787243476765,
       "tag": "0005_friendly_the_order",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787678137952,
+      "tag": "0006_fine_freak",
+      "breakpoints": true
     }
   ]
 }

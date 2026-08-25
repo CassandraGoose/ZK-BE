@@ -14,6 +14,7 @@ import { toZodV4SchemaTyped } from "@/lib/zod-utils";
 export const notes = pgTable("note", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().notNull(),
+  content: text().notNull().default(''),
   created: timestamp({ withTimezone: true }).defaultNow(),
   edited: timestamp({ withTimezone: true }),
 });
@@ -62,6 +63,7 @@ export const createNotesSchema = toZodV4SchemaTyped(
   })
     .required({
       name: true,
+      content: true,
     })
     .omit({
       id: true,
