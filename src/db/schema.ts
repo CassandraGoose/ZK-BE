@@ -67,8 +67,9 @@ export const createNotesSchema = toZodV4SchemaTyped(
       id: true,
       created: true,
       edited: true,
-    }).extend({
-      sourceId: z.uuid()
+    })
+    .extend({
+      sourceId: z.uuid(),
     }),
 );
 
@@ -105,14 +106,17 @@ export const sourcesRelations = relations(sources, ({ many }) => ({
 }));
 
 export const noteSourcesRelations = relations(noteSources, ({ one }) => ({
-  note: one(notes, { fields: [noteSources.note_id], references: [notes.id], relationName: "noteToSourceLinks" }),
+  note: one(notes, {
+    fields: [noteSources.note_id],
+    references: [notes.id],
+    relationName: "noteToSourceLinks",
+  }),
   source: one(sources, {
     fields: [noteSources.source_id],
     references: [sources.id],
-    relationName: "sourceToNoteLinks"
+    relationName: "sourceToNoteLinks",
   }),
 }));
-
 
 // @ts-expect-error partial exists on zod v4 type
 export const patchSourcesSchema = createSourceSchema.partial();

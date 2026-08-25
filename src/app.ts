@@ -2,7 +2,7 @@ import configureOpenAPI from "@/lib/configure-open-api";
 import createApp from "@/lib/create-app";
 import index from "@/routes/index.route";
 import notes from "@/routes/notes/notes.index";
-import sources from '@/routes/sources/sources.index';
+import sources from "@/routes/sources/sources.index";
 
 const app = createApp();
 
