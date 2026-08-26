@@ -15,6 +15,7 @@ export default antfu(
   {
     rules: {
       "no-console": ["warn"],
+      "style/brace-style": "off",
       "style/arrow-parens": ["error", "always"],
       "antfu/no-top-level-await": ["off"],
       "node/prefer-global/process": ["off"],

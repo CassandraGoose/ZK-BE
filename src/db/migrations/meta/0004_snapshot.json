@@ -34,12 +34,8 @@
           "name": "note_source_noteId_note_id_fk",
           "tableFrom": "note_source",
           "tableTo": "note",
-          "columnsFrom": [
-            "noteId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["noteId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -47,12 +43,8 @@
           "name": "note_source_sourceId_source_id_fk",
           "tableFrom": "note_source",
           "tableTo": "source",
-          "columnsFrom": [
-            "sourceId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sourceId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -60,10 +52,7 @@
       "compositePrimaryKeys": {
         "note_source_noteId_sourceId_pk": {
           "name": "note_source_noteId_sourceId_pk",
-          "columns": [
-            "noteId",
-            "sourceId"
-          ]
+          "columns": ["noteId", "sourceId"]
         }
       },
       "uniqueConstraints": {},

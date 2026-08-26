@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
 
@@ -17,7 +17,11 @@ import type {
 } from "./sources.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
+  const userId = c.get("userId");
   const sources = await db.query.sources.findMany({
+    where(fields, ops) {
+      return ops.eq(fields.user_id, userId);
+    },
     with: { linkedNotes: { with: { note: true } } },
   });
   const formattedSources = sources.map(({ linkedNotes, ...source }) => ({
@@ -29,6 +33,7 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
   const { noteId, ...source } = c.req.valid("json");
+  const userId = c.get("userId");
 
   const existingNote = await db
     .select()
@@ -44,7 +49,10 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
     );
   }
 
-  const [inserted] = await db.insert(sources).values(source).returning();
+  const [inserted] = await db
+    .insert(sources)
+    .values({ ...source, user_id: userId })
+    .returning();
 
   await db
     .insert(noteSources)
@@ -56,9 +64,13 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   const { id: idParam } = c.req.valid("param");
   const id = String(idParam);
+  const userId = c.get("userId");
   const source = await db.query.sources.findFirst({
     where(fields, operators) {
-      return operators.eq(fields.id, id);
+      return operators.and(
+        operators.eq(fields.id, id),
+        operators.eq(fields.user_id, userId),
+      );
     },
     with: {
       linkedNotes: { with: { note: true } },
@@ -87,6 +99,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
   const { id: idParam } = c.req.valid("param");
   const id = String(idParam);
   const updates = c.req.valid("json");
+  const userId = c.get("userId");
 
   if (Object.keys(updates).length === 0) {
     return c.json(
@@ -110,7 +123,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
   const [source] = await db
     .update(sources)
     .set(updates)
-    .where(eq(sources.id, id))
+    .where(and(eq(sources.id, id), eq(sources.user_id, userId)))
     .returning();
 
   if (!source) {
@@ -141,7 +154,10 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
 export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
   const { id: idParam } = c.req.valid("param");
   const id = String(idParam);
-  const result = await db.delete(sources).where(eq(sources.id, id));
+  const userId = c.get("userId");
+  const result = await db
+    .delete(sources)
+    .where(and(eq(sources.id, id), eq(sources.user_id, userId)));
   // remove related note_sources connections to this source
   if (result.rowCount === 0) {
     return c.json(
