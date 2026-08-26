@@ -28,6 +28,8 @@ const EnvSchema = z
     ]),
     DATABASE_URL: z.string().url(),
     DATABASE_AUTH_TOKEN: z.string().optional(),
+    COGNITO_USER_POOL_ID: z.string(),
+    COGNITO_CLIENT_ID: z.string(),
   })
   .superRefine((input, ctx) => {
     if (input.NODE_ENV === "production" && !input.DATABASE_AUTH_TOKEN) {

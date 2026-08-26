@@ -14,7 +14,8 @@ import { toZodV4SchemaTyped } from "@/lib/zod-utils";
 export const notes = pgTable("note", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().notNull(),
-  content: text().notNull().default(''),
+  content: text().notNull().default(""),
+  user_id: text().notNull(),
   created: timestamp({ withTimezone: true }).defaultNow(),
   edited: timestamp({ withTimezone: true }),
 });
@@ -23,6 +24,7 @@ export const sources = pgTable("source", {
   id: uuid().primaryKey().defaultRandom(),
   title: text().notNull(),
   artifact: text().notNull(),
+  user_id: text().notNull(),
   created: timestamp({ withTimezone: true }).defaultNow(),
   edited: timestamp({ withTimezone: true }),
 });
@@ -69,6 +71,7 @@ export const createNotesSchema = toZodV4SchemaTyped(
       id: true,
       created: true,
       edited: true,
+      user_id: true,
     })
     .extend({
       sourceId: z.uuid(),
@@ -87,6 +90,7 @@ export const createSourceSchema = toZodV4SchemaTyped(
       id: true,
       created: true,
       edited: true,
+      user_id: true,
     })
     .extend({
       noteId: z.uuid(),

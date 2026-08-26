@@ -1,6 +1,6 @@
 {
-  "id": "8c78659e-bd5f-4a68-827a-14ef1a0e1c6d",
-  "prevId": "dcb9af51-aba3-4902-a0c3-66b42218291f",
+  "id": "82d9a778-0d1b-4271-be44-e5c1bfb078c1",
+  "prevId": "8c78659e-bd5f-4a68-827a-14ef1a0e1c6d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -84,6 +84,12 @@
           "notNull": true,
           "default": "''"
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created": {
           "name": "created",
           "type": "timestamp with time zone",
@@ -125,6 +131,12 @@
         },
         "artifact": {
           "name": "artifact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
