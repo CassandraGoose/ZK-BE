@@ -14,65 +14,70 @@ import type {
   ListRoute,
   PatchRoute,
   RemoveRoute,
-} from "./notes.routes";
+} from "./sources.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const userId = c.get("userId");
-  const notes = await db.query.notes.findMany({
+  const sources = await db.query.sources.findMany({
     where(fields, ops) {
       return ops.eq(fields.user_id, userId);
     },
-    with: { linkedSources: { with: { source: true } } },
+    with: { linkedNotes: { with: { note: true } } },
   });
-  const formattedNotes = notes.map(({ linkedSources, ...note }) => ({
-    ...note,
-    sources: linkedSources.map((source) => source.source),
+  const formattedSources = sources.map(({ linkedNotes, ...source }) => ({
+    ...source,
+    notes: linkedNotes.map((note) => note.note),
   }));
-  return c.json(formattedNotes);
+  return c.json(formattedSources);
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
-  const { sourceId, ...note } = c.req.valid("json");
+  const { noteId, ...source } = c.req.valid("json");
   const userId = c.get("userId");
 
-  const linkedSource = await db
+  const existingNote = await db
     .select()
-    .from(sources)
-    .where(eq(sources.id, sourceId));
-
-  if (!linkedSource.length) {
+    .from(notes)
+    .where(eq(notes.id, noteId));
+  // todo fix all returning items having linkednotes and notes
+  if (!existingNote.length) {
     return c.json(
       {
-        message: `${HttpStatusPhrases.NOT_FOUND}: the source you are trying to link does not exist.`,
+        message: `${HttpStatusPhrases.NOT_FOUND}: the note you are trying to link does not exist.`,
       },
       HttpStatusCodes.NOT_FOUND,
     );
   }
+
   const [inserted] = await db
-    .insert(notes)
-    .values({ ...note, user_id: userId })
+    .insert(sources)
+    .values({ ...source, user_id: userId })
     .returning();
 
   await db
     .insert(noteSources)
-    .values({ source_id: sourceId, note_id: inserted.id });
+    .values({ note_id: noteId, source_id: inserted.id });
 
-  return c.json({ ...inserted, sources: linkedSource }, HttpStatusCodes.OK);
+  return c.json({ ...inserted, notes: existingNote }, HttpStatusCodes.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   const { id: idParam } = c.req.valid("param");
   const id = String(idParam);
   const userId = c.get("userId");
-
-  const note = await db.query.notes.findFirst({
-    where(fields, ops) {
-      return ops.and(ops.eq(fields.id, id), ops.eq(fields.user_id, userId));
+  const source = await db.query.sources.findFirst({
+    where(fields, operators) {
+      return operators.and(
+        operators.eq(fields.id, id),
+        operators.eq(fields.user_id, userId),
+      );
     },
-    with: { linkedSources: { with: { source: true } } },
+    with: {
+      linkedNotes: { with: { note: true } },
+    },
   });
 
-  if (!note) {
+  if (!source) {
     return c.json(
       {
         message: HttpStatusPhrases.NOT_FOUND,
@@ -82,7 +87,10 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   }
 
   return c.json(
-    { ...note, sources: note.linkedSources.map((source) => source.source) },
+    {
+      ...source,
+      notes: source.linkedNotes.map((note) => note.note),
+    },
     HttpStatusCodes.OK,
   );
 };
@@ -112,13 +120,13 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
     );
   }
 
-  const [note] = await db
-    .update(notes)
+  const [source] = await db
+    .update(sources)
     .set(updates)
-    .where(and(eq(notes.id, id), eq(notes.user_id, userId)))
+    .where(and(eq(sources.id, id), eq(sources.user_id, userId)))
     .returning();
 
-  if (!note) {
+  if (!source) {
     return c.json(
       {
         message: HttpStatusPhrases.NOT_FOUND,
@@ -127,15 +135,18 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
     );
   }
 
-  const linkedSources = await db.query.noteSources.findMany({
-    where(fields, ops) {
-      return ops.eq(fields.note_id, note.id);
+  const linkedNotes = await db.query.noteSources.findMany({
+    where(fields, operators) {
+      return operators.eq(fields.source_id, source.id);
     },
-    with: { source: true },
+    with: { note: true },
   });
 
   return c.json(
-    { ...note, sources: linkedSources.map(({ source }) => source) },
+    {
+      ...source,
+      notes: linkedNotes.map(({ note }) => note),
+    },
     HttpStatusCodes.OK,
   );
 };
@@ -144,11 +155,10 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
   const { id: idParam } = c.req.valid("param");
   const id = String(idParam);
   const userId = c.get("userId");
-
   const result = await db
-    .delete(notes)
-    .where(and(eq(notes.id, id), eq(notes.user_id, userId)));
-
+    .delete(sources)
+    .where(and(eq(sources.id, id), eq(sources.user_id, userId)));
+  // remove related note_sources connections to this source
   if (result.rowCount === 0) {
     return c.json(
       {

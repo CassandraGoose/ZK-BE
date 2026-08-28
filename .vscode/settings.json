@@ -1,7 +1,7 @@
 {
-  // Disable the default formatter, use eslint instead
-  "prettier.enable": false,
-  "editor.formatOnSave": false,
+  // Prettier is the default formatter
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
 
   // Auto fix
   "editor.codeActionsOnSave": {
