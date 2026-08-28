@@ -1,10 +1,12 @@
 import type { Schema } from "hono";
 
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 import { defaultHook } from "stoker/openapi";
 
+import { cognitoAuth } from "@/middlewares/cognito-auth";
 import { pinoLogger } from "@/middlewares/pino-logger";
 
 import type { AppBindings, AppOpenAPI } from "./types";
@@ -18,6 +20,8 @@ export function createRouter() {
 
 export default function createApp() {
   const app = createRouter();
+  app.use("*", cors());
+  app.use("*", cognitoAuth);
   app.use(requestId()).use(serveEmojiFavicon("📝")).use(pinoLogger());
 
   app.notFound(notFound);

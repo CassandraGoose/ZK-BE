@@ -4,7 +4,7 @@ import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdUUIDParamsSchema } from "stoker/openapi/schemas";
 
 import {
-  insertSourcesSchema,
+  createSourceSchema,
   patchSourcesSchema,
   selectSourcesSchema,
 } from "@/db/schema";
@@ -28,7 +28,7 @@ export const create = createRoute({
   path: "/sources",
   method: "post",
   request: {
-    body: jsonContentRequired(insertSourcesSchema, "The source to create"),
+    body: jsonContentRequired(createSourceSchema, "The source to create"),
   },
   tags,
   responses: {
@@ -37,8 +37,12 @@ export const create = createRoute({
       "The created source",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(insertSourcesSchema),
+      createErrorSchema(createSourceSchema),
       "The validation error(s)",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Source not found",
     ),
   },
 });
