@@ -1,1 +1,0 @@
-ALTER TABLE "note" ADD COLUMN "content" text DEFAULT '' NOT NULL;

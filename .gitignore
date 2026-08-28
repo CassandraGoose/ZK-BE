@@ -32,6 +32,5 @@ dev.db
 test.db
 .vercel
 dist
-package-lock.json
 
 .dev.var
