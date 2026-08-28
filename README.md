@@ -1,66 +1,34 @@
 # ZK - Zettlekasten API
 
-## Built with W3CJ's Hono Open API Starter Kit - A starter template for building fully documented type-safe JSON APIs with Hono and Open API.
+ZK is a decoupled, full-stack Zettlekasten note application.
+
+Find out more about Zettlekasten [here](https://en.wikipedia.org/wiki/Zettelkasten)
+
+This project was built to give me a solid review of Angular and a chance to work with Hono (see backend [here](https://github.com/CassandraGoose/ZK-BE)), as well as get practice working with various Application Security processes.
+
+See the project board [here](https://github.com/users/CassandraGoose/projects/4)
+
+## Front-end Tech
+
+- Node.js
+- Hono
+- Zod
+- Stoker
+- Drizzle
+- PostgreSQL
+- Pino
+- AWS-JWT-Verifier
+- ESLint / Prettier
+
+## Security Considerations
+
+- [Threat Model](https://github.com/CassandraGoose/ZK-FE/blob/main/docs/ZK%20Full%20Stack%20Thread%20Model%20Document.pdf)
+- SAST with Semgrep in the CI pipeline
+- Coming Soon: GitLeaks, Dependabot, Security Report, Session Management Writeup, SDLC Report, DAST, OWASP ASVS Checklist Report
+
+(Built with W3CJ's Hono Open API Starter Kit - A starter template for building fully documented type-safe JSON APIs with Hono and Open API.)
 
 ---
-
-## This API serves users with a collection of their notes, tied to sources. Users can explore their related notes and sources and add/edit them. As their collection grows, to enhance understanding and make connections, users can view a graph of their notes connected via concepts/ideas/categories crafted by AI (coming soon)
-
-## Included, from Hono Open API Starter Kit
-
-- Structured logging with [pino](https://getpino.io/) / [hono-pino](https://www.npmjs.com/package/hono-pino)
-- Documented / type-safe routes with [@hono/zod-openapi](https://github.com/honojs/middleware/tree/main/packages/zod-openapi)
-- Interactive API documentation with [scalar](https://scalar.com/#api-docs) / [@scalar/hono-api-reference](https://github.com/scalar/scalar/tree/main/packages/hono-api-reference)
-- Convenience methods / helpers to reduce boilerplate with [stoker](https://www.npmjs.com/package/stoker)
-- Type-safe schemas and environment variables with [zod](https://zod.dev/)
-- Single source of truth database schemas with [drizzle](https://orm.drizzle.team/docs/overview) and [drizzle-zod](https://orm.drizzle.team/docs/zod)
-- Testing with [vitest](https://vitest.dev/)
-- Sensible editor, formatting and linting settings with [@antfu/eslint-config](https://github.com/antfu/eslint-config)
-
-## Setup
-
-Create `.env` file
-
-```sh
-cp .env.example .env
-```
-
-Install dependencies
-
-```sh
-npm install
-```
-
-Create a test database (assuming you have psql/postgres ready)
-
-```sh
-createdb zk_test
-```
-
-Create db / push schema
-
-```sh
-npm drizzle-kit generate
-npm drizzle-kit push
-```
-
-Run
-
-```sh
-pnpm dev
-```
-
-Lint & Format
-
-```sh
-pnpm lintformat
-```
-
-Test
-
-```sh
-pnpm test
-```
 
 ## Endpoints
 
