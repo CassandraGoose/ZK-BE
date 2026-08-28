@@ -8,6 +8,55 @@
       "when": 1782243761484,
       "tag": "0000_lying_dark_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782340628530,
+      "tag": "0001_hard_vermin",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786489718718,
+      "tag": "0002_dazzling_tusk",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1786490175428,
+      "tag": "0003_green_shotgun",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787243271208,
+      "tag": "0004_plain_hedge_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787243476765,
+      "tag": "0005_friendly_the_order",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787678137952,
+      "tag": "0006_fine_freak",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1787770101407,
+      "tag": "0007_workable_newton_destine",
+      "breakpoints": true
     }
   ]
 }
