@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - develop
   schedule:
     - cron: "20 17 * * *"
 
@@ -54,6 +55,25 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ummmheck
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: zk_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ummmheck"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://ummmheck:postgres@localhost:5432/zk_test
+      LOG_LEVEL: silent
+      COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
+      COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -84,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: semgrep/semgrep
-    if: (github.actor != 'dependabot[bot]')
+    if: github.actor != 'dependabot[bot]'
     permissions:
       contents: read
     steps:
