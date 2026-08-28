@@ -4,7 +4,7 @@ ZK is a decoupled, full-stack Zettlekasten note application.
 
 Find out more about Zettlekasten [here](https://en.wikipedia.org/wiki/Zettelkasten)
 
-This project was built to give me a solid review of Angular and a chance to work with Hono (see backend [here](https://github.com/CassandraGoose/ZK-BE)), as well as get practice working with various Application Security processes.
+This project was built to give me a solid review of Angular (see frontend [here](https://github.com/CassandraGoose/ZK-FE)) and a chance to work with Hono, as well as get practice working with various Application Security processes.
 
 See the project board [here](https://github.com/users/CassandraGoose/projects/4)
 
