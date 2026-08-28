@@ -6,6 +6,7 @@ import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import { ZodIssueCode } from "zod";
 
 import db from "@/db";
+import { notes } from "@/db/schema";
 import env from "@/env";
 import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
 import { createTestApp } from "@/lib/create-app";
@@ -19,6 +20,8 @@ if (env.NODE_ENV !== "test") {
 const client = testClient(createTestApp(router));
 
 describe("sources routes", () => {
+  let noteId: string;
+
   beforeAll(async () => {
     const result = await db.execute<Record<string, unknown>>(
       sql`SELECT current_database()`,
@@ -36,6 +39,16 @@ describe("sources routes", () => {
     );
     await db.execute(sql`DROP SCHEMA IF EXISTS drizzle CASCADE;`);
     await migrate(db, { migrationsFolder: "./src/db/migrations" });
+
+    const [note] = await db
+      .insert(notes)
+      .values({
+        name: "Fixture note",
+        content: "Some content",
+        user_id: "00000000-0000-0000-0000-000000000000",
+      })
+      .returning();
+    noteId = note.id;
   });
 
   it("post /sources validates the body when creating", async () => {
@@ -61,6 +74,7 @@ describe("sources routes", () => {
       json: {
         title,
         artifact,
+        noteId,
       },
     });
     expect(response.status).toBe(200);
