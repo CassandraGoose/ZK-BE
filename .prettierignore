@@ -1,0 +1,9 @@
+node_modules
+dist
+dev.db
+*.db
+package-lock.json
+.env
+.env.*
+logs
+src/db/migrations
