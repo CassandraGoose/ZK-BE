@@ -22,7 +22,7 @@ See the project board [here](https://github.com/users/CassandraGoose/projects/4)
 
 ## Security Considerations
 
-- [Threat Model](https://github.com/CassandraGoose/ZK-FE/blob/main/docs/ZK%20Full%20Stack%20Thread%20Model%20Document.pdf)
+- [Threat Model](https://github.com/CassandraGoose/ZK-BE/blob/main/docs/ZK%20Full%20Stack%20Threat%20Model%20Document.pdf)
 - SAST with Semgrep in the CI pipeline
 - Coming Soon: GitLeaks, Dependabot, Security Report, Session Management Writeup, SDLC Report, DAST, OWASP ASVS Checklist Report
 
