@@ -6,6 +6,8 @@ Find out more about Zettlekasten [here](https://en.wikipedia.org/wiki/Zettelkast
 
 This project was built to give me a solid review of Angular (see frontend [here](https://github.com/CassandraGoose/ZK-FE)) and a chance to work with Hono, as well as get practice working with various Application Security processes.
 
+(This project was built with W3CJ's Hono Open API Starter Kit - A starter template for building fully documented type-safe JSON APIs with Hono and Open API.)
+
 See the project board [here](https://github.com/users/CassandraGoose/projects/4)
 
 ## Front-end Tech
@@ -25,8 +27,6 @@ See the project board [here](https://github.com/users/CassandraGoose/projects/4)
 - [Threat Model Document](./docs/ZK%20Full%20Stack%20Threat%20Model%20Document.pdf)
 - SAST with Semgrep in the CI pipeline
 - Coming Soon: GitLeaks, Dependabot, Security Report, Session Management Writeup, SDLC Report, DAST, OWASP ASVS Checklist Report
-
-(Built with W3CJ's Hono Open API Starter Kit - A starter template for building fully documented type-safe JSON APIs with Hono and Open API.)
 
 ---
 
